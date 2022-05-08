@@ -131,7 +131,7 @@ func drawScreen(s tcell.Screen) {
 // Whether or not the given point is in the Mandelbrot set
 func isConvergent(ca, cb float64) (bool, int) {
 	var a, b float64 = 0, 0
-	max := 256
+	max := 64
 	var i int
 	for i = 0; i < max; i++ {
 		as, bs := a*a, b*b
