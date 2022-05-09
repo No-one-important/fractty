@@ -9,3 +9,4 @@ vendor/
 fractty
 *.test
 *.exe
+*.prof
