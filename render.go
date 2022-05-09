@@ -17,7 +17,6 @@ func drawScreen(s tcell.Screen) {
 
 	for x := 0; x < w; x++ {
 		for y := 0; y < h*2; y += 1 {
-
 			// convert terminal window character cell (double height) to viewport range
 			r := mapnum(x, 0, w, vp.x0, vp.x1)
 			i := mapnum(y, 0, h*2, vp.y0, vp.y1)
