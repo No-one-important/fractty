@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"os"
 	"time"
+	"flag"
 
 	"github.com/gdamore/tcell/encoding"
 	"github.com/gdamore/tcell/v2"
@@ -14,8 +15,12 @@ import (
 
 var style = tcell.StyleDefault
 var quit chan bool
+var fractal *string
 
 func main() {
+	fractal = flag.String("f", "mandelbrot", "Fractal type")
+	flag.Parse()
+
 	tcell.SetEncodingFallback(tcell.EncodingFallbackASCII)
 	screen, err := tcell.NewScreen()
 	if err != nil {
@@ -55,17 +60,38 @@ type viewport struct {
 	x0, x1, y0, y1 float64
 }
 
-// Whether or not the given point is in the Mandelbrot set
 func isConvergent(ca, cb float64) (bool, int) {
-	var a, b float64 = 0, 0
-	max := 64
-	var i int
-	for i = 0; i < max; i++ {
-		as, bs := a*a, b*b
-		if as+bs > 2 {
+	switch *fractal {
+		case "julia":
+			return isConvergentJulia(ca, cb)
+		default:
+			return isConvergentMandelbrot(ca, cb)
+	}
+}
+
+func isConvergentJulia(ca, cb float64) (bool, int) {
+	maxIterations := 64
+	za := 0.0
+	zb := 0.0
+	for i := 0; i < maxIterations; i++ {
+		za = za*za - zb*zb + ca
+		zb = 2*za*zb + cb
+		if za*za+zb*zb > 4 {
 			return false, i
 		}
-		a, b = as-bs+ca, 2*a*b+cb
 	}
-	return true, i
+	return true, 0
+}
+
+func isConvergentMandelbrot(ca, cb float64) (bool, int) {
+	maxIterations := 64
+	z := complex(ca, cb)
+	c := complex(ca, cb)
+	for i := 0; i < maxIterations; i++ {
+		z = z*z + c
+		if real(z)*real(z)+imag(z)*imag(z) > 4 {
+			return false, i
+		}
+	}
+	return true, maxIterations
 }
